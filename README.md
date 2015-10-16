@@ -179,3 +179,27 @@ header("Content-Length: ".$info->getContentLength());
 
 //Flush the content
 echo $info->getContent();
+```
+
+<h4>Delete A File</h4>
+A file can be simply delete by using the delete method of the adapter. Use the following code to delete a file:
+
+```php
+<?php
+require "vendor/autoload.php";
+
+use MkjUploader\Upload;
+use MkjUploader\Adapter\Local;
+
+//Get the key from the database. I'm using a static here
+$key = '4/e/0/4e0fc90172f0fabcaca1ab042f1459b6587e440c/daterangepicker.png';
+
+//Create a local adapter. uploads folder must be there and writeable
+$adapter = new Local('uploads','uploads');
+
+//Create main Upload object and pass the adapter
+$uploadObj = new Upload($adapter);
+
+//Delete The File
+$delete  = $uploadObj->delete($key);
+```
