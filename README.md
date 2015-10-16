@@ -57,7 +57,7 @@ use MkjUploader\Adapter\Local;
 if(isset($_POST['submit'])) {
 
     //Create upload directory if not exist
-    if(is_dir('uploads')) {
+    if(!is_dir('uploads')) {
     	mkdir('uploads', 0777, true);
     }
     
