@@ -71,7 +71,7 @@ class Upload implements UploadInterface {
      * 
      * @param File\Input $inputFile   File input like array or plain object
      * 
-     * @return string       Id of the new file
+     * @return string       key of the new file
      * 
      * @throws \InvalidArgumentException    If input was not an interface of file class
      */
@@ -88,90 +88,90 @@ class Upload implements UploadInterface {
             ));
         }
 
-        $id = $this->generateDirectoryStructure($inputFile->getBasename());
+        $key = $this->generateDirectoryStructure($inputFile->getBasename());
         
-        if ($this->has($id)) {
+        if ($this->has($key)) {
             return $this->upload($inputFile);
         }
 
-        $this->adapter->upload($id, $inputFile);
+        $this->adapter->upload($key, $inputFile);
 
-        return $id;
+        return $key;
     }
 
     /**
      * Get the uploaded file object
      * 
-     * @param type $id  Id of the uploaded file
+     * @param type $key  key of the uploaded file
      * 
      * @return object
      * 
-     * @throws \InvalidArgumentException If Id not provided
+     * @throws \InvalidArgumentException If key not provided
      */
-    public function get($id) {
+    public function get($key) {
         
-        if (empty($id)) {
+        if (empty($key)) {
             throw new \InvalidArgumentException('ID must be provided');
         }
 
-        return $this->adapter->get($id);
+        return $this->adapter->get($key);
     }
 
     /**
      * Move a file to another location
      * 
-     * @param type $id  Id of the uploaded file
+     * @param type $key  key of the uploaded file
      * 
      * @return \MkjUploader\File\File
      * 
-     * @throws \InvalidArgumentException    If Id not provided
+     * @throws \InvalidArgumentException    If key not provided
      */
-    public function move($id) {
+    public function move($key) {
         
-        if (empty($id)) {
+        if (empty($key)) {
             throw new \InvalidArgumentException('ID must be provided');
         }
 
-        $file       = $this->adapter->get($id);
+        $file       = $this->adapter->get($key);
         $outputFile = new File\File($file->getBasename(), $this->generateTemporaryPath());
 
-        $this->adapter->download($id, $outputFile);
+        $this->adapter->download($key, $outputFile);
 
         return $outputFile;
     }
 
     /**
-     * Check if the file exists with the given Id
+     * Check if the file exists with the given key
      * 
-     * @param type $id  Id of the uploaded file
+     * @param type $key  key of the uploaded file
      * 
      * @return boolean
      */
-    public function has($id) {
+    public function has($key) {
         
-        if (empty($id)) {
+        if (empty($key)) {
             return false;
         }
 
-        return $this->adapter->has($id);
+        return $this->adapter->has($key);
     }
 
     /**
-     * Delete a file of given Id
+     * Delete a file of given key
      * 
-     * @param type $id  Id of the uploaded file
+     * @param type $key  key of the uploaded file
      * 
      * @return void
      * 
      * @throws \InvalidArgumentException
      */
-    public function delete($id) {
+    public function delete($key) {
         
-        if (empty($id)) {
+        if (empty($key)) {
             throw new \InvalidArgumentException('ID must be provided');
         }
 
-        return $this->adapter->delete($id);
+        return $this->adapter->delete($key);
     }
 
     /**
