@@ -41,23 +41,26 @@ CREATE TABLE `files` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 ```
 <b>Write the PHP code</b>
+<small>index.php</small>
 ```php
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 
 //Upload A New File Through $_FILE Input
 
 require "vendor/autoload.php";
 
-use MjangirUploader\File\Input;
-use MjangirUploader\Upload;
-use MjangirUploader\Adapter\Local;
+use MkjUploader\File\Input;
+use MkjUploader\Upload;
+use MkjUploader\Adapter\Local;
 
 
 
 if(isset($_POST['submit'])) {
+
+    //Create upload directory if not exist
+    if(!is_dir('uploads')) {
+    	mkdir('uploads', 0777, true);
+    }
     
     //Create a local adapter. uploads folder must be there and writeable
     $adapter = new Local('uploads','uploads');
@@ -74,10 +77,10 @@ if(isset($_POST['submit'])) {
     
     
     //Insert the file information in database
-    $dbhost     = "localhost";
-    $dbname     = "mkjuploader";
-    $dbuser     = "root";
-    $dbpass     = "root";
+    $dbhost     = "DATABASE_HOST";
+    $dbname     = "DATABASE_NAME";
+    $dbuser     = "DATABASE_USER";
+    $dbpass     = "DATABASE_PASS";
 
     $conn = new PDO("mysql:host=$dbhost;dbname=$dbname",$dbuser,$dbpass);
 
@@ -96,4 +99,107 @@ if(isset($_POST['submit'])) {
     <input type="file" name="profile"/>
     <input type="submit" name="submit" value="submit" />
 </form>
+```
+
+<h4>Get A File Info</h4>
+You can get the complete file info on the basis of stored key in database. In the following example I'm using a static key for one of my stored files.
+
+<small>get.php</small>
+
+```php
+<?php
+require "vendor/autoload.php";
+
+use MkjUploader\Upload;
+use MkjUploader\Adapter\Local;
+
+//Get the key from the database. I'm using a static here
+$key = '6/4/3/643c4b13e88cb02e6e4a9fa6369666bbb83c978e/jdbc.zip';
+
+//Create a local adapter. uploads folder must be there and writeable
+$adapter = new Local('uploads','uploads');
+
+//Create main Upload object and pass the adapter
+$uploadObj = new Upload($adapter);
+
+//Get file info
+$info   = $uploadObj->get($key);
+
+//Iterate over the object
+echo "Public Path       :: ". $info->getPublicPath() ."<br/>"; //uploads/6/4/3/643c4b13e88cb02e6e4a9fa6369666bbb83c978e/jdbc.zip
+echo "Base Name         :: ". $info->getBasename() ."<br/>"; //jdbc.zip
+echo "File Extension    :: ". $info->getExtension() ."<br/>"; //zip
+echo "File Size         :: ". $info->getContentLength() ."<br/>"; //2921919
+echo "Mime Type         :: ". $info->getContentType() ."<br/>"; //application/zip
+echo "Last Modified     :: ". $info->getLastModified()->format('d M, Y') ."<br/>"; //16 Oct, 2015
+
+```
+
+<h4>Download A File Info</h4>
+You can download a file on the basis of stored key in database. In the following example I'm using a static key for one of my stored files.
+
+<small>download.php</small>
+
+```php
+<?php
+require "vendor/autoload.php";
+
+use MkjUploader\Upload;
+use MkjUploader\Adapter\Local;
+
+//Get the key from the database. I'm using a static here
+$key = '6/4/3/643c4b13e88cb02e6e4a9fa6369666bbb83c978e/jdbc.zip';
+
+//Create a local adapter. uploads folder must be there and writeable
+$adapter = new Local('uploads','uploads');
+
+//Create main Upload object and pass the adapter
+$uploadObj = new Upload($adapter);
+
+//Get file info
+$info   = $uploadObj->get($key);
+
+$fileName = $info->getBasename();
+
+//If file name doesn't contain extension
+if (!pathinfo($fileName, PATHINFO_EXTENSION) && $info->getExtension()) {
+    $fileName .= '.'. $info->getExtension();
+}
+
+//Set the http response headers to download the file
+$mimeType = $info->getContentType() ?: 'application/octet-stream';
+
+header('Content-Type: "'.$mimeType.'"');
+header('Content-Disposition: attachment; filename="'. str_replace('"', '\\"', $fileName) .'"');
+header('Expires: 0');
+header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+header("Content-Transfer-Encoding: binary");
+header('Pragma: public');
+header("Content-Length: ".$info->getContentLength());
+
+//Flush the content
+echo $info->getContent();
+```
+
+<h4>Delete A File</h4>
+A file can be simply delete by using the delete method of the adapter. Use the following code to delete a file:
+
+```php
+<?php
+require "vendor/autoload.php";
+
+use MkjUploader\Upload;
+use MkjUploader\Adapter\Local;
+
+//Get the key from the database. I'm using a static here
+$key = '4/e/0/4e0fc90172f0fabcaca1ab042f1459b6587e440c/daterangepicker.png';
+
+//Create a local adapter. uploads folder must be there and writeable
+$adapter = new Local('uploads','uploads');
+
+//Create main Upload object and pass the adapter
+$uploadObj = new Upload($adapter);
+
+//Delete The File
+$delete  = $uploadObj->delete($key);
 ```
