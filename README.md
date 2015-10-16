@@ -113,9 +113,6 @@ require "vendor/autoload.php";
 use MkjUploader\Upload;
 use MkjUploader\Adapter\Local;
 
-ini_set('display_errors',true);
-error_reporting(E_ALL);
-
 //Get the key from the database. I'm using a static here
 $key = '6/4/3/643c4b13e88cb02e6e4a9fa6369666bbb83c978e/jdbc.zip';
 
