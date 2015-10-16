@@ -12,7 +12,7 @@ use MkjUploader\Object\ObjectInterface;
 interface UploadInterface {
     
     /**
-     * Upload a file and return the Id of that uploaded object
+     * Upload a file and return the key of that uploaded object
      *
      * Input must be a $_FILES array or an object of type FileInterface.
      *
@@ -23,38 +23,38 @@ interface UploadInterface {
     public function upload($inputFile);
 
     /**
-     * Get the file object of the given file Id
+     * Get the file object of the given file key
      *
-     * @param string $id
+     * @param string $key
      *
      * @return ObjectInterface
      */
-    public function get($id);
+    public function get($key);
 
     /**
      * Create a copy of any uploaded file as new file
      *
-     * @param string $id
+     * @param string $key
      *
      * @return FileInterface
      */
-    public function move($id);
+    public function move($key);
 
     /**
-     * Check if the file exists with the given Id
+     * Check if the file exists with the given key
      *
-     * @param string $id
+     * @param string $key
      *
      * @return boolean
      */
-    public function has($id);
+    public function has($key);
 
     /**
-     * Delete a file of given Id
+     * Delete a file of given key
      *
-     * @param string $id
+     * @param string $key
      */
-    public function delete($id);
+    public function delete($key);
 
     /**
      * Set the valid file adapter in container
