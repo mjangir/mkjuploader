@@ -132,3 +132,50 @@ echo "File Extension    :: ". $info->getExtension() ."<br/>"; //zip
 echo "File Size         :: ". $info->getContentLength() ."<br/>"; //2921919
 echo "Mime Type         :: ". $info->getContentType() ."<br/>"; //application/zip
 echo "Last Modified     :: ". $info->getLastModified()->format('d M, Y') ."<br/>"; //16 Oct, 2015
+
+```
+
+<h4>Download A File Info</h4>
+You can download a file on the basis of stored key in database. In the following example I'm using a static key for one of my stored files.
+
+<small>download.php</small>
+
+```php
+<?php
+require "vendor/autoload.php";
+
+use MkjUploader\Upload;
+use MkjUploader\Adapter\Local;
+
+//Get the key from the database. I'm using a static here
+$key = '6/4/3/643c4b13e88cb02e6e4a9fa6369666bbb83c978e/jdbc.zip';
+
+//Create a local adapter. uploads folder must be there and writeable
+$adapter = new Local('uploads','uploads');
+
+//Create main Upload object and pass the adapter
+$uploadObj = new Upload($adapter);
+
+//Get file info
+$info   = $uploadObj->get($key);
+
+$fileName = $info->getBasename();
+
+//If file name doesn't contain extension
+if (!pathinfo($fileName, PATHINFO_EXTENSION) && $info->getExtension()) {
+    $fileName .= '.'. $info->getExtension();
+}
+
+//Set the http response headers to download the file
+$mimeType = $info->getContentType() ?: 'application/octet-stream';
+
+header('Content-Type: "'.$mimeType.'"');
+header('Content-Disposition: attachment; filename="'. str_replace('"', '\\"', $fileName) .'"');
+header('Expires: 0');
+header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+header("Content-Transfer-Encoding: binary");
+header('Pragma: public');
+header("Content-Length: ".$info->getContentLength());
+
+//Flush the content
+echo $info->getContent();
