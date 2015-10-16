@@ -43,21 +43,23 @@ CREATE TABLE `files` (
 <b>Write the PHP code</b>
 ```php
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 
 //Upload A New File Through $_FILE Input
 
 require "vendor/autoload.php";
 
-use MjangirUploader\File\Input;
-use MjangirUploader\Upload;
-use MjangirUploader\Adapter\Local;
+use MkjUploader\File\Input;
+use MkjUploader\Upload;
+use MkjUploader\Adapter\Local;
 
 
 
 if(isset($_POST['submit'])) {
+
+    //Create upload directory if not exist
+    if(is_dir('uploads')) {
+    	mkdir('uploads', 0777, true);
+    }
     
     //Create a local adapter. uploads folder must be there and writeable
     $adapter = new Local('uploads','uploads');
@@ -74,10 +76,10 @@ if(isset($_POST['submit'])) {
     
     
     //Insert the file information in database
-    $dbhost     = "localhost";
-    $dbname     = "mkjuploader";
-    $dbuser     = "root";
-    $dbpass     = "root";
+    $dbhost     = "DATABASE_HOST";
+    $dbname     = "DATABASE_NAME";
+    $dbuser     = "DATABASE_USER";
+    $dbpass     = "DATABASE_PASS";
 
     $conn = new PDO("mysql:host=$dbhost;dbname=$dbname",$dbuser,$dbpass);
 
