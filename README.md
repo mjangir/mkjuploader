@@ -41,6 +41,7 @@ CREATE TABLE `files` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 ```
 <b>Write the PHP code</b>
+<small>index.php</small>
 ```php
 <?php
 
